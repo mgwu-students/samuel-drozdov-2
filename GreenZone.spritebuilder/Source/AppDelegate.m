@@ -35,7 +35,9 @@
     [MGWU loadMGWU:@"10583GreenZone"];
     [MGWU preFacebook]; //Temporarily disables Facebook until you integrate it later
     
-    [MGWU setReminderMessage:@"Come back and play!"];
+    [MGWU useCrashlyticsWithApiKey:@"2d036bd18fa0c7a9a7148929a1d2ea6d8ad9c630"];
+    
+    [MGWU setReminderMessage:@"Come back and zone!"];
     
     // Configure Cocos2d with the options set in SpriteBuilder
     NSString* configPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Published-iOS"]; // TODO: add support for Published-Android support
