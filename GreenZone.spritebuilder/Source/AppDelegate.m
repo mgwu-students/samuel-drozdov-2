@@ -27,7 +27,6 @@
 
 #import "AppDelegate.h"
 #import "CCBuilderReader.h"
-#import <mgwuSDK/MGWU.h>
 
 @implementation AppController
 

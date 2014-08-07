@@ -16,6 +16,7 @@
     CCNode *_greenZone;
     CCNode *_pointer;
     CCNodeColor *_barBackground;
+    CCNodeColor *_gameArea;
     
     float direction;
     float shrinkSpeed;
@@ -32,7 +33,7 @@
 - (void)onEnter {
     [super onEnter];
     direction = 2.0;
-    shrinkSpeed = 0.0015;
+    shrinkSpeed = 0.002;
     score = 0;
     greenSpeed = 1.0;
     
@@ -60,9 +61,9 @@
 -(void)update:(CCTime)delta {
     if(!gameEnd) {
         _pointer.positionInPoints = ccp(_pointer.positionInPoints.x, _pointer.positionInPoints.y+   direction);
-        if(_pointer.positionInPoints.y+5 >= 350) {
+        if(_pointer.positionInPoints.y+_pointer.boundingBox.size.height/2 >= _gameArea.positionInPoints.y + _gameArea.boundingBox.size.height/2) {
             direction *= -1;
-        } else if(_pointer.positionInPoints.y-5 <= 0) {
+        } else if(_pointer.positionInPoints.y-_pointer.boundingBox.size.height/2 <= _gameArea.positionInPoints.y - _gameArea.boundingBox.size.height/2) {
             direction *= -1;
         }
     
@@ -76,8 +77,8 @@
         
         if(score >= 10) {
             _greenZone.positionInPoints = ccp(_greenZone.positionInPoints.x, _greenZone.    positionInPoints.y + greenSpeed);
-            if(_greenZone.positionInPoints.y + _greenZone.boundingBox.size.height/2 >= 350
-               || _greenZone.positionInPoints.y - _greenZone.boundingBox.size.height/2 <= 0) {
+            if(_greenZone.positionInPoints.y + _greenZone.boundingBox.size.height/2 >= _gameArea.positionInPoints.y + _gameArea.boundingBox.size.height/2
+               || _greenZone.positionInPoints.y - _greenZone.boundingBox.size.height/2 <= _gameArea.positionInPoints.y - _gameArea.boundingBox.size.height/2) {
                 greenSpeed *= -1;
             }
         }
@@ -91,7 +92,7 @@
     }
     
     //the green bar blinks white
-    if(colorTimer == 2) {
+    if(colorTimer == 1) {
         _greenZone.color = greenZoneColor;
         _barBackground.color = barBackgroundColor;
         colorTimer = 0;
@@ -113,15 +114,15 @@
       && (_pointer.positionInPoints.y >= _greenZone.positionInPoints.y - _greenZone.boundingBox.size.height/2
       || _pointer.positionInPoints.y + 5 >= _greenZone.positionInPoints.y - _greenZone.boundingBox.size.height/2)) {
        float gHeight = _greenZone.boundingBox.size.height;
-       if(_greenZone.positionInPoints.y + gHeight*1.2/2 < 350 && _greenZone.positionInPoints.y - gHeight*1.2/2 > 0) {
+       if(_greenZone.positionInPoints.y + gHeight*1.3/2 < _gameArea.positionInPoints.y + _gameArea.boundingBox.size.height/2 && _greenZone.positionInPoints.y - gHeight*1.3/2 > _gameArea.positionInPoints.y - _gameArea.boundingBox.size.height/2) {
            if(gHeight*1.2 < 100) {
-               _greenZone.scaleY += 0.2;
+               _greenZone.scaleY += 0.3;
            } else {
                _greenZone.scale = 1;
            }
        }
        score++;
-       shrinkSpeed += 0.000032;
+       shrinkSpeed += 0.000031;
        
        _greenZone.color = [CCColor whiteColor];
           _barBackground.color = [CCColor greenColor];
