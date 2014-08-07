@@ -15,25 +15,24 @@
     CCNode *_playBar;
     CCNode *_greenZone;
     CCNode *_pointer;
+    CCNodeColor *_barBackground;
     
-    double direction;
-    double speed;
-    double greenSpeed;
+    float direction;
+    float shrinkSpeed;
+    float greenSpeed;
     
+    CCColor *barBackgroundColor;
     CCColor *greenZoneColor;
     int colorTimer;
     
     bool gameEnd;
     int gameEndTimer;
-    
-    CCNode *_full1;
-    CCNode *_full2;
 }
 
 - (void)onEnter {
     [super onEnter];
     direction = 2.0;
-    speed = 0.002;
+    shrinkSpeed = 0.0015;
     score = 0;
     greenSpeed = 1.0;
     
@@ -53,6 +52,8 @@
     self.userInteractionEnabled = YES;
     
     greenZoneColor = _greenZone.color;
+    barBackgroundColor = _barBackground.color;
+    
     colorTimer = 0;
 }
 
@@ -65,37 +66,34 @@
             direction *= -1;
         }
     
-        _greenZone.scaleY = _greenZone.scaleYInPoints - speed;
+        _greenZone.scaleY = _greenZone.scaleYInPoints - shrinkSpeed;
         if(_greenZone.scaleYInPoints <= 0) {
             [MGWU logEvent:@"ShrinkedGreenZoneLoss" withParams:nil];
-            [self gameEnd];
+            _greenZone.scale = 0;
+            gameEndTimer = 0;
+            gameEnd = true;
         }
         
         if(score >= 10) {
             _greenZone.positionInPoints = ccp(_greenZone.positionInPoints.x, _greenZone.    positionInPoints.y + greenSpeed);
-            if(_greenZone.positionInPoints.y + _greenZone.boundingBox.size.height/2 >= 350) {
-                greenSpeed *= -1;
-            } else if(_greenZone.positionInPoints.y - _greenZone.boundingBox.size.height/2 <= 0) {
+            if(_greenZone.positionInPoints.y + _greenZone.boundingBox.size.height/2 >= 350
+               || _greenZone.positionInPoints.y - _greenZone.boundingBox.size.height/2 <= 0) {
                 greenSpeed *= -1;
             }
         }
         
         float gHeight = _greenZone.boundingBox.size.height;
+        CCColor *barBackgroundHolder = _barBackground.color;
         if(gHeight >= 98) {
-            _full1.scale = 1;
-            _full2.scale = 1;
-        } else if(_full1.scaleY >= 0) {
-            _full1.scaleY -= .03;
-            _full2.scaleY -= .03;
-        } else {
-            _full1.scaleY = 0;
-            _full2.scaleY = 0;
+            _barBackground.color = [CCColor whiteColor];
         }
+        _barBackground.color = barBackgroundHolder;
     }
     
     //the green bar blinks white
-    if(colorTimer == 1) {
+    if(colorTimer == 2) {
         _greenZone.color = greenZoneColor;
+        _barBackground.color = barBackgroundColor;
         colorTimer = 0;
     }
     colorTimer++;
@@ -123,9 +121,10 @@
            }
        }
        score++;
-       speed+=0.00003;
+       shrinkSpeed += 0.000032;
        
        _greenZone.color = [CCColor whiteColor];
+          _barBackground.color = [CCColor greenColor];
        colorTimer = 0;
        
        if(direction > 0) {
@@ -158,7 +157,7 @@
     }
     [[NSUserDefaults standardUserDefaults] synchronize];
     CCScene *mainScene = [CCBReader loadAsScene:@"MainScene"];
-    [[CCDirector sharedDirector] replaceScene:mainScene withTransition:[CCTransition transitionPushWithDirection:CCTransitionDirectionDown duration:0.5f]];;
+    [[CCDirector sharedDirector] replaceScene:mainScene withTransition:[CCTransition transitionPushWithDirection:CCTransitionDirectionDown duration:0.5f]];
 }
 
 
